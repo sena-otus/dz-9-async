@@ -18,7 +18,7 @@ int main(int argc, char const *argv[] )
 
     if(argc != 2)
     {
-      std::cout << "Запуск:\n bulk <N>\n\n где <N> это количество команд в блоке для обработки\n";
+      std::cout << "Запуск:\n async <N>\n\n где <N> это количество команд в блоке для обработки\n";
       return 0;
     }
 

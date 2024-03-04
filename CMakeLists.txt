@@ -4,7 +4,7 @@ set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 
 # underscores are not allowed in deb package name, but adding underscore to comply with requirements...
-project(bulk VERSION ${PROJECT_VERSION})
+project(async VERSION ${PROJECT_VERSION})
 
 option(WITH_TEST "Whether to build Google test" ON)
 option(WITH_CLANG_TIDY "use clang-tidy" OFF)
@@ -21,16 +21,16 @@ endif()
 
 configure_file(version.h.in version.h)
 
-add_executable(bulk main.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp)
+add_executable(async main.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp)
 
-target_link_libraries(bulk PRIVATE Boost::boost)
+target_link_libraries(async PRIVATE Boost::boost)
 
-set_target_properties(bulk PROPERTIES
+set_target_properties(async PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
 
-target_include_directories(bulk
+target_include_directories(async
     PRIVATE "${CMAKE_BINARY_DIR}"
   )
 
@@ -38,20 +38,20 @@ if(WITH_TEST)
     find_package(GTest REQUIRED)
     enable_testing()
 
-    add_executable(gtest_bulk gtest_bulk.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp)
+    add_executable(gtest_async gtest_async.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp)
 
-    set_target_properties(gtest_bulk PROPERTIES
+    set_target_properties(gtest_async PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
     )
 
-    target_link_libraries(gtest_bulk
+    target_link_libraries(gtest_async
       PRIVATE
       GTest::gtest_main
       Boost::boost
     )
 
-    gtest_discover_tests(gtest_bulk)
+    gtest_discover_tests(gtest_async)
 endif()
 
 configure_file(testinput1.txt . COPYONLY)
@@ -65,7 +65,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --all-warnings -Wall -Werror -Wextra -pedantic")
 endif()
 
-install(TARGETS bulk RUNTIME DESTINATION bin)
+install(TARGETS async RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")

@@ -1,7 +1,7 @@
 /**
- * @file gtest_bulk.cpp
+ * @file gtest_async.cpp
  *
- * @brief test bulk
+ * @brief test async
  *  */
 
 #include "block.h"
@@ -55,7 +55,7 @@ namespace {
     return output_must;
   }
 
-  TEST(bulk, input1) {
+  TEST(async, input1) {
     {
       std::filesystem::remove("bulk10000.log");
       std::filesystem::remove("bulk10001.log");
@@ -65,7 +65,7 @@ namespace {
     }
   }
 
-  TEST(bulk, input2) {
+  TEST(async, input2) {
     {
       std::filesystem::remove("bulk20000.log");
       std::filesystem::remove("bulk20001.log");
