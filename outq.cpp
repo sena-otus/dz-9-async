@@ -11,19 +11,19 @@ void OutQueue::put(Task &&task)
 
 void OutQueue::putExit()
 {
-  put({"", 0, 0, true});
+  m_exitFlag = true;
+  m_event.notify_all();
 }
 
 
 OutQueue::Task OutQueue::fetch()
 {
   std::unique_lock<std::mutex> ul(m_mutex);
-  m_event.wait(ul, [this]{return !m_oq.empty();});
-  auto task = m_oq.front();
-  if(!task.m_exit)
-  {
-      // "exit" task stays in queue forever
-    m_oq.pop();
+  m_event.wait(ul, [this]{return !m_oq.empty() || m_exitFlag;});
+  if(m_oq.empty()) {
+    return Task{"", 0, 0, true};
   }
+  auto task = m_oq.front();
+  m_oq.pop();
   return task;
 }
