@@ -28,6 +28,7 @@ namespace {
     }
     EXPECT_FALSE(ifsin.bad());
     ba.disconnect(handler);
+    ba.closeAll();
     return testing::internal::GetCapturedStdout();
   }
 
