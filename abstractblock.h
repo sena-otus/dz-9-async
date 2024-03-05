@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 
 /** @brief Чисто абстрактный класс - интерфейс блока */
 
@@ -19,7 +19,7 @@ public:
 
     /** @brief Добавить строку в буфер
      * @param line строка для обновления */
-  virtual void append(const std::string &line) = 0;
+  virtual void append(const std::string_view &line) = 0;
 
     /** @brief количество накопленных команд */
   [[nodiscard]] virtual unsigned cmdnum() const = 0;

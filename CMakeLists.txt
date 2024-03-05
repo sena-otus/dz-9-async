@@ -21,7 +21,7 @@ endif()
 
 configure_file(version.h.in version.h)
 
-add_executable(async main.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp)
+add_executable(async main.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp async.cpp)
 
 target_link_libraries(async PRIVATE Boost::boost)
 
@@ -38,7 +38,7 @@ if(WITH_TEST)
     find_package(GTest REQUIRED)
     enable_testing()
 
-    add_executable(gtest_async gtest_async.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp)
+    add_executable(gtest_async gtest_async.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp async.cpp)
 
     set_target_properties(gtest_async PROPERTIES
         CXX_STANDARD 20

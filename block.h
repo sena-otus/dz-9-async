@@ -24,13 +24,13 @@ public:
      * */
   explicit Block(
     wlist_t &&wlist,
-    std::function<time_t()> getTime = [](){ return std::time(nullptr);});
+    std::function<time_t()> getTime);
 
     /**
      * @brief Добавить строку в буфер
      * @param line строка для обновления
      * */
-  void append(const std::string &line) override;
+  void append(const std::string_view &line) override;
 
 
   [[nodiscard]] unsigned cmdnum() const override;
@@ -41,7 +41,7 @@ public:
   void flush() override;
 
 private:
-  wlist_t m_wlist; //!< список функций для вывода блока команд
+  wlist_t m_wlist; //!< список писателей для вывода блока команд
   std::string m_str; //!< буфер для накопления команд
   unsigned m_cmdnum{0}; //!< количество накопленных команд
   time_t m_timestamp{0}; //!< временная метка

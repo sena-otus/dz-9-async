@@ -1,7 +1,8 @@
 #pragma once
 
 #include "abstractblock.h"
-#include <string>
+#include <memory>
+#include <string_view>
 
 /**
  * @brief Parser разбирает входные строки на блоки и выводит их
@@ -12,13 +13,13 @@ public:
    * @param N размер блока
    * @param block буфер для команд
    * */
-  explicit Parser(unsigned N, AbstractBlock &block);
+  explicit Parser(unsigned N, std::unique_ptr<AbstractBlock> &&block);
 
   /**
    *  @brief Разобрать строку и вывести блок по готовности
    *  @param line строка для разбора
    *  */
-  void parse(const std::string &line);
+  void parse(const std::string_view &line);
 
   /**
    * @brief Вывести остатки данных в буфере(должно быть вызвано в конце)
@@ -26,7 +27,7 @@ public:
   void finalize();
 
 private:
-  AbstractBlock &m_block;
+  std::unique_ptr<AbstractBlock> m_block;
   int m_lineno{0};
   int m_extendedModeLevel{0};
   unsigned m_N;

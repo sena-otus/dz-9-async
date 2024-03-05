@@ -7,7 +7,7 @@ Block::Block(
   std::function<time_t()> getTime)
   : m_wlist(std::move(wlist)), m_getTime(std::move(getTime)) {}
 
-void Block::append(const std::string &line) {
+void Block::append(const std::string_view &line) {
   if (m_cmdnum == 0) {
     m_str = line;
     const time_t newts = m_getTime();
@@ -18,7 +18,7 @@ void Block::append(const std::string &line) {
     }
     m_timestamp = newts;
   } else {
-    m_str += ", " + line;
+    m_str += ", " + std::string(line);
   }
   m_cmdnum++;
 }
