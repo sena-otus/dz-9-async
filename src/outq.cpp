@@ -4,7 +4,7 @@ using std::lock_guard;
 
 void OutQueue::put(Task &&task) {
   {
-    lock_guard<std::mutex> lg(m_mutex);
+    const lock_guard<std::mutex> lg(m_mutex);
     m_oq.emplace(task);
   }
   m_event.notify_one();

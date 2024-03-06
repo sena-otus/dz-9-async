@@ -1,6 +1,5 @@
 #include "async.h"
 #include <iostream>
-#include <memory>
 #include <stdexcept>
 
 

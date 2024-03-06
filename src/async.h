@@ -7,7 +7,7 @@
 #include <thread>
 #include <set>
 
-/** Интерфейс к библиотеке async */
+/** @brief Интерфейс к библиотеке async */
 class BulkAsync final
 {
 public:
@@ -24,7 +24,7 @@ public:
     /** @}*/
 
     /**
-     * Создаёт контекст для обработки потока команд. Может вызываться
+     * @brief Создаёт контекст для обработки потока команд. Может вызываться
      * несколько раз
      * @param N размер блока команд
      * @param getTime функция для генерации временных меток
@@ -33,7 +33,7 @@ public:
   shparser_t connect(unsigned N, const std::function<time_t()> &getTime = [](){ return std::time(nullptr);});
 
     /**
-     * Обработка очередной команды
+     * @brief Обработка очередной команды
      * @param shp контекст потока команд
      * @param buf указатель на буфер с командой
      * @param size размер буфера
@@ -41,20 +41,20 @@ public:
   void receive(const shparser_t &shp, const char *buf, size_t size);
 
     /**
-     * Обработка очередной команды
+     * @brief Обработка очередной команды
      * @param shp контекст потока команд
      * @param str строка  с командой
      * */
   void receive(const shparser_t &shp, const std::string &str) {receive(shp, str.data(), str.size());}
 
     /**
-     * Разрушить контекст потока команд.
+     * @brief Разрушить контекст потока команд.
      * @param shp контекст потока команд
      * */
   void disconnect(const shparser_t &shp);
 
     /**
-     * Разрушить все контексты потоков.
+     * @brief Разрушить все контексты потоков.
      * */
   void closeAll();
 
