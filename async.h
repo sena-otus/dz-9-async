@@ -22,6 +22,8 @@ public:
 
   shparser_t connect(unsigned N, const std::function<time_t()> &getTime = [](){ return std::time(nullptr);});
   void receive(const shparser_t &shp, const char *buf, size_t size);
+  void receive(const shparser_t &shp, const std::string &str) {receive(shp, str.data(), str.size());}
+
   void disconnect(const shparser_t &shp);
   void closeAll();
 
