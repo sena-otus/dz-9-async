@@ -21,43 +21,26 @@ endif()
 
 configure_file(version.h.in version.h)
 
-add_executable(async main.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp async.cpp)
+add_subdirectory(src)
 
-target_link_libraries(async PRIVATE Boost::boost)
+if(WITH_TEST)
+  add_subdirectory(test)
+  enable_testing()
+endif()
 
-set_target_properties(async PROPERTIES
+
+add_executable(asyncapp main.cpp)
+
+target_link_libraries(asyncapp PRIVATE async)
+
+set_target_properties(asyncapp PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
 )
 
-target_include_directories(async
-    PRIVATE "${CMAKE_BINARY_DIR}"
+target_include_directories(asyncapp
+    PRIVATE "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}/src"
   )
-
-if(WITH_TEST)
-    find_package(GTest REQUIRED)
-    enable_testing()
-
-    add_executable(gtest_async gtest_async.cpp block.cpp parser.cpp stdoutwriter.cpp filewriter.cpp outq.cpp async.cpp)
-
-    set_target_properties(gtest_async PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED ON
-    )
-
-    target_link_libraries(gtest_async
-      PRIVATE
-      GTest::gtest_main
-      Boost::boost
-    )
-
-    gtest_discover_tests(gtest_async)
-endif()
-
-configure_file(testinput1.txt . COPYONLY)
-configure_file(testinput2.txt . COPYONLY)
-configure_file(testoutput1.txt . COPYONLY)
-configure_file(testoutput2.txt . COPYONLY)
 
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
@@ -65,7 +48,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --all-warnings -Wall -Werror -Wextra -pedantic")
 endif()
 
-install(TARGETS async RUNTIME DESTINATION bin)
+install(TARGETS asyncapp RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")

@@ -8,6 +8,7 @@
 #include <memory>
 #include <stdexcept>
 
+  // NOLINTNEXTLINE(performance-unnecessary-value-param)
 void filewriter(OutQueueSP oq) {
   while (true) {
     try {

@@ -1,6 +1,7 @@
 #include "stdoutwriter.h"
 #include <iostream>
 
+  // NOLINTNEXTLINE(performance-unnecessary-value-param)
 void stdoutwriter(OutQueueSP oq)
 {
   while (true) {
