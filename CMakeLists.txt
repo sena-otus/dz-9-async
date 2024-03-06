@@ -8,6 +8,7 @@ project(async VERSION ${PROJECT_VERSION})
 
 option(WITH_TEST "Whether to build Google test" ON)
 option(WITH_CLANG_TIDY "use clang-tidy" OFF)
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 find_package(Boost REQUIRED)
 
