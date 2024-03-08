@@ -25,6 +25,7 @@ int main(int argc, char const *argv[] )
 
     auto *handler = async::connect(N);
     for(std::string line; std::getline(std::cin, line);) {
+      line+="\n";
       async::receive(handler, line.data(), line.size());
     }
     async::disconnect(handler);

@@ -22,6 +22,7 @@ std::string get_is(const std::string &path_in, time_t t) {
   std::ifstream ifsin(path_in);
   EXPECT_TRUE(ifsin.is_open());
   for (std::string line; std::getline(ifsin, line);) {
+    line+="\n";
     ba.receive(handler, line.data(), line.size());
   }
   EXPECT_FALSE(ifsin.bad());
@@ -90,22 +91,22 @@ TEST(async, input_mix) {
     auto *h2 = ba.connect(3, [&t2]() { return t2++; });
     auto *h3 = ba.connect(3, [&t3]() { return t3; });
 
-    ba.receive(h1, "h1.str1");
-    ba.receive(h2, "h2.str1");
-    ba.receive(h3, "h3.str1");
-    ba.receive(h1, "h1.str2");
-    ba.receive(h2, "h2.str2");
-    ba.receive(h3, "h3.str2");
-    ba.receive(h1, "h1.str3");
-    ba.receive(h2, "h2.str3");
-    ba.receive(h3, "h3.str3");
+    ba.receive(h1, "h1.str1\n");
+    ba.receive(h2, "h2.str1\n");
+    ba.receive(h3, "h3.str1\n");
+    ba.receive(h1, "h1.str2\n");
+    ba.receive(h2, "h2.str2\n");
+    ba.receive(h3, "h3.str2\n");
+    ba.receive(h1, "h1.str3\n");
+    ba.receive(h2, "h2.str3\n");
+    ba.receive(h3, "h3.str3\n");
 
-    ba.receive(h1, "h1.str4");
-    ba.receive(h2, "h2.str4");
-    ba.receive(h3, "h3.str4");
-    ba.receive(h1, "h1.str5");
-    ba.receive(h2, "h2.str5");
-    ba.receive(h3, "h3.str5");
+    ba.receive(h1, "h1.str4\n");
+    ba.receive(h2, "h2.str4\n");
+    ba.receive(h3, "h3.str4\n");
+    ba.receive(h1, "h1.str5\n");
+    ba.receive(h2, "h2.str5\n");
+    ba.receive(h3, "h3.str5\n");
 
     ba.disconnect(h1);
     ba.disconnect(h2);
