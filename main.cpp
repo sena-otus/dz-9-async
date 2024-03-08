@@ -23,12 +23,11 @@ int main(int argc, char const *argv[] )
       throw std::runtime_error("Единственный аргумент командной строки дожен быть положительным числом");
     }
 
-    BulkAsync ba;
-    auto handler = ba.connect(N);
+    auto *handler = async::connect(N);
     for(std::string line; std::getline(std::cin, line);) {
-      ba.receive(handler, line.data(), line.size());
+      async::receive(handler, line.data(), line.size());
     }
-    ba.disconnect(handler);
+    async::disconnect(handler);
     return 0;
   }
   catch(const std::exception &e)

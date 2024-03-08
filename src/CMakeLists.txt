@@ -5,6 +5,7 @@ add_library(async
   filewriter.cpp
   outq.cpp
   async.cpp
+  bulkasync.cpp
 )
 
 target_link_libraries(async PRIVATE Boost::boost)

@@ -4,7 +4,7 @@
  * @brief test async
  *  */
 
-#include "async.h"
+#include "bulkasync.h"
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -17,7 +17,7 @@ using std::string;
 std::string get_is(const std::string &path_in, time_t t) {
   testing::internal::CaptureStdout();
   BulkAsync ba;
-  auto handler = ba.connect(3, [&t]() { return t++; });
+  auto *handler = ba.connect(3, [&t]() { return t++; });
 
   std::ifstream ifsin(path_in);
   EXPECT_TRUE(ifsin.is_open());
@@ -86,9 +86,9 @@ TEST(async, input_mix) {
     time_t t3 = 50000;
 
     BulkAsync ba;
-    auto h1 = ba.connect(3, [&t1]() { return t1++; });
-    auto h2 = ba.connect(3, [&t2]() { return t2++; });
-    auto h3 = ba.connect(3, [&t3]() { return t3; });
+    auto *h1 = ba.connect(3, [&t1]() { return t1++; });
+    auto *h2 = ba.connect(3, [&t2]() { return t2++; });
+    auto *h3 = ba.connect(3, [&t3]() { return t3; });
 
     ba.receive(h1, "h1.str1");
     ba.receive(h2, "h2.str1");
