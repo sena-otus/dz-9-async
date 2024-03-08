@@ -1,5 +1,8 @@
 find_package(GTest REQUIRED)
 
+enable_testing()
+
+
 add_executable(gtest_async gtest_async.cpp)
 
 set_target_properties(gtest_async PROPERTIES
