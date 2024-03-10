@@ -4,6 +4,7 @@
 #include "block.h"
 #include "parser.h"
 
+#include <shared_mutex>
 #include <thread>
 #include <map>
 
@@ -66,5 +67,6 @@ private:
   std::thread m_worker_fw1; ///!< первый тред записи в файл
   std::thread m_worker_fw2; ///!< второй тред записи в файл
   std::thread m_worker_cw;  ///!< тред вывода на экран
+  std::shared_mutex m_mapmutex; ///!< доступ к мапе
   std::map<void *, std::shared_ptr<Parser>> m_parser; ///!< контексты потоков команд
 };
