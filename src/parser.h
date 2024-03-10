@@ -1,6 +1,7 @@
 #pragma once
 
 #include "abstractblock.h"
+#include "acculine.h"
 #include <memory>
 #include <string_view>
 
@@ -31,6 +32,6 @@ private:
   int m_lineno{0};
   int m_extendedModeLevel{0};
   unsigned m_N;
-  bool m_complete;
-  std::string m_cmd;
+//  std::string m_cmd;
+  AccuLine m_acculine;
 };

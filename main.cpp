@@ -3,32 +3,19 @@
 #include <stdexcept>
 
 
-const int generic_errorcode = 101;
+const int generic_errorcode = 200;
 
-int main(int argc, char const *argv[] )
-{
+int main(int argc[[maybe_unused]], char const *argv[[maybe_unused]][] ) {
   try {
-    unsigned N{0};
-
-    if(argc != 2)
-    {
-      std::cout << "Запуск:\n async <N>\n\n где <N> это количество команд в блоке для обработки\n";
-      return 0;
-    }
-
-    try {
-      N = std::stoul(argv[1]);
-    }
-    catch(...) {
-      throw std::runtime_error("Единственный аргумент командной строки дожен быть положительным числом");
-    }
-
-    auto *handler = async::connect(N);
-    for(std::string line; std::getline(std::cin, line);) {
-      line+="\n";
-      async::receive(handler, line.data(), line.size());
-    }
-    async::disconnect(handler);
+    std::size_t bulk = 5;
+    auto *h = async::connect(bulk);
+    auto *h2 = async::connect(bulk);
+    async::receive(h, "1", 1);
+    async::receive(h2, "1\n", 2);
+    async::receive(h, "\n2\n3\n4\n5\n6\n{\na\n", 15);
+    async::receive(h, "b\nc\nd\n}\n89\n", 11);
+    async::disconnect(h);
+    async::disconnect(h2);
     return 0;
   }
   catch(const std::exception &e)

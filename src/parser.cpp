@@ -1,50 +1,60 @@
 #include "parser.h"
 #include <stdexcept>
 #include <iostream>
+#include <string_view>
 
 
 Parser::Parser(unsigned N, std::unique_ptr<AbstractBlock> &&block)
-  : m_block(std::move(block)), m_N(N), m_complete(true)
+  : m_block(std::move(block)), m_N(N)
 {}
+
+
 
 void Parser::parse(const std::string_view& line)
 {
-  bool complete{true};
-  auto eol = line.find_first_of('\n');
-  if(eol == std::string::npos) {
-    complete = false;
-  }
-  else {
-    m_lineno++;
-  }
-  auto newcmd = line.substr(0, eol);
-  if(m_complete) {
-    m_cmd = newcmd;
-  }
-  else {
-    m_cmd += newcmd;
-  }
-  m_complete = complete;
-  if(!complete) return;
-
-  if(m_cmd == "{")
+  // std::string_view curline{line};
+  // while(!curline.empty())
+  // {
+  //   bool complete{true};
+  //   auto eolpos = curline.find_first_of('\n');
+  //   std::string_view newcmd;
+  //   if(eolpos == std::string::npos) {
+  //     newcmd = curline;
+  //     curline.remove_prefix(curline.length());
+  //     complete = false;
+  //   } else {
+  //     newcmd = curline.substr(0, eolpos);
+  //     curline.remove_prefix(eolpos+1);
+  //     m_lineno++;
+  //   }
+  //   m_cmd += newcmd;
+  //   if(!complete) return;
+  //   auto cmd = m_cmd;
+  //   m_cmd.clear();
+  m_acculine.addNewInput(line);
+  std::optional<std::string> cmd;
+  while((cmd = m_acculine.getNextCmd()))
   {
-    m_extendedModeLevel++;
-    if(m_extendedModeLevel > 1) return;
-    m_block->flush();
-    return;
+    if(*cmd == "{")
+    {
+      m_extendedModeLevel++;
+      if(m_extendedModeLevel > 1) continue;
+      m_block->flush();
+      continue;
+    }
+    if(*cmd == "}")
+    {
+      m_extendedModeLevel--;
+      if(m_extendedModeLevel > 0) continue;
+      if(m_extendedModeLevel < 0) throw std::runtime_error("лишняя скобка } в строке " + std::to_string(m_lineno));
+      m_block->flush();
+      continue;
+    }
+    if(m_block->cmdnum() < m_N || m_extendedModeLevel > 0) m_block->append(*cmd);
+    if(m_block->cmdnum() == m_N && m_extendedModeLevel == 0) m_block->flush();
   }
-  if(m_cmd == "}")
-  {
-    m_extendedModeLevel--;
-    if(m_extendedModeLevel > 0) return;
-    if(m_extendedModeLevel < 0) throw std::runtime_error("лишняя скобка } в строке " + std::to_string(m_lineno));
-    m_block->flush();
-    return;
-  }
-  if(m_block->cmdnum() < m_N || m_extendedModeLevel > 0) m_block->append(m_cmd);
-  if(m_block->cmdnum() == m_N && m_extendedModeLevel == 0) m_block->flush();
 }
+
 
 
 
