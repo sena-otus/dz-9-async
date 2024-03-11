@@ -4,14 +4,27 @@
 #include <string_view>
 #include <string>
 
+
+/**
+ * Аккумулятор строк получает на вход поток символов поблочно и
+ * разделяет его на отдельные строки (команды), разделённые с помощью
+ * перевода строки
+ * */
 class AccuLine
 {
 public:
+    /** Запомнить для обработки очередной блок символов */
   void addNewInput(const std::string_view &inputstr)
   {
     m_curline = inputstr;
   }
 
+    /**
+     * Получить следующую комнду.
+     * Остаток неполной команды без завершающего перевода строки
+     * записывается в m_cmd
+     * @return строка или пустое значение, если больше полных строк нет
+     * */
   std::optional<std::string> getNextCmd()
   {
     if(m_curline.empty()) return {};
@@ -34,6 +47,6 @@ public:
   }
 
 private:
-  std::string m_cmd;
-  std::string_view m_curline;
+  std::string m_cmd; ///!< остаток незаконченной команды из предыдущего блока
+  std::string_view m_curline; ///!< текущий блок (уменьшается по мере обработки)
 };
