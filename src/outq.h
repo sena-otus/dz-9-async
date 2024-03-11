@@ -16,8 +16,7 @@ public:
   struct Task
   {
     std::string m_str; ///<! строка с командами для вывода
-    std::time_t m_ts;  ///<! метка времени
-    int m_suffix;      ///<! суффикс
+    std::string m_fname; ///<! имя файла для вывода
     bool m_exit;       ///<! true - игнорировать содержимое и выйти
   };
 

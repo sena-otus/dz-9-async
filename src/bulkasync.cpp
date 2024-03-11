@@ -11,7 +11,8 @@ BulkAsync::BulkAsync()
     m_qcout(std::make_shared<OutQueue>()),
     m_worker_fw1(std::thread(filewriter , m_qfile)), // start 1st file writer thread
     m_worker_fw2(std::thread(filewriter , m_qfile)), // start 2nd file writer thread
-    m_worker_cw (std::thread(stdoutwriter,m_qcout)) // start single cout writer thread
+    m_worker_cw (std::thread(stdoutwriter,m_qcout)), // start single cout writer thread
+    m_nextuid(0)
 {
 }
 
@@ -24,54 +25,62 @@ BulkAsync::~BulkAsync()
 }
 
 
-Parser* BulkAsync::connect(const unsigned N, const std::function<time_t()>& getTime)
+void* BulkAsync::connect(const unsigned N, const std::function<time_t()>& getTime)
 {
   if(!m_qfile || !m_qcout) return nullptr;
-  shparser_t parser = std::make_shared<Parser>(N, std::make_unique<Block>(Block::wlist_t{m_qfile, m_qcout}, getTime));
+  auto blockptr = std::make_unique<Block>(m_nextuid,
+                                          Block::wlist_t{m_qfile, m_qcout},
+                                          getTime);
+  m_nextuid++;
+  parserptr_t parser = std::make_unique<Parser>(N, std::move(blockptr));
+  auto *rawptr = parser.get();
   {
-    std::lock_guard<std::shared_mutex> lock(m_mapmutex);
-    m_parser.emplace(parser.get(), parser);
+    const std::lock_guard<std::shared_mutex> lock(m_mapmutex);
+    m_parser.emplace(rawptr, std::move(parser));
   }
-  return parser.get();
+  return rawptr;
 }
 
 void
 BulkAsync::receive(void *ptr, const char *buf, size_t size)
 {
-  assert((buf != nullptr));
-  assert((m_qfile != nullptr));
-    // execute only if it is "our" shp (stored in set)
-  {
-    std::shared_lock<std::shared_mutex> lock(m_mapmutex);
-    auto it = m_parser.find(ptr);
-    if(it!= m_parser.end() ) {
-      it->second->parse(std::string_view(buf, size));
-    }
+    // залочить мютекс чтобы другой поток не мог вызвать disconnect(ptr)
+    // но использовать shared_lock чтобы разрешить вызов других receive()
+  const std::shared_lock<std::shared_mutex> lock(m_mapmutex);
+  auto *parser = static_cast<Parser*>(ptr);
+  parser->parse(std::string_view(buf, size));
+}
+
+void
+BulkAsync::receive_checked(void *ptr, const char *buf, size_t size)
+{
+  const std::shared_lock<std::shared_mutex> lock(m_mapmutex);
+    // исполнить только если ptr это "наш" ptr, сохранённый в m_parser
+  auto it = m_parser.find(ptr);
+  if(it!= m_parser.end() ) {
+    it->second->parse(std::string_view(buf, size));
   }
 }
 
 void BulkAsync::disconnect(void *ptr)
 {
-    // execute only if it is "our" shp (stored in set)
-  {
-    std::lock_guard<std::shared_mutex> lock(m_mapmutex);
-    auto pit = m_parser.find(ptr);
-    if(pit != m_parser.end()) {
-      pit->second->finalize();
-      m_parser.erase(pit);
-    }
+  const std::lock_guard<std::shared_mutex> lock(m_mapmutex);
+  auto pit = m_parser.find(ptr);
+  if(pit != m_parser.end()) {
+    pit->second->finalize();
+    m_parser.erase(pit);
   }
 }
 
 void BulkAsync::closeAll()
 {
-  for(auto && shp : m_parser)
   {
-    shp.second->finalize();
-  }
+    const std::lock_guard<std::shared_mutex> lock(m_mapmutex);
+    for(auto && shp : m_parser)
+    {
+      shp.second->finalize();
+    }
 
-  {
-    std::lock_guard<std::shared_mutex> lock(m_mapmutex);
     m_parser.clear();
   }
 

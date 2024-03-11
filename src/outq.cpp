@@ -22,7 +22,7 @@ OutQueue::Task OutQueue::fetch()
   std::unique_lock<std::mutex> ul(m_mutex);
   m_event.wait(ul, [this]{return !m_oq.empty() || m_exitFlag;});
   if(m_oq.empty()) {
-    return Task{"", 0, 0, true};
+    return Task{"", "", true};
   }
   auto task = m_oq.front();
   m_oq.pop();
