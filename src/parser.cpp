@@ -12,25 +12,6 @@ Parser::Parser(unsigned N, std::unique_ptr<AbstractBlock> &&block)
 
 void Parser::parse(const std::string_view& line)
 {
-  // std::string_view curline{line};
-  // while(!curline.empty())
-  // {
-  //   bool complete{true};
-  //   auto eolpos = curline.find_first_of('\n');
-  //   std::string_view newcmd;
-  //   if(eolpos == std::string::npos) {
-  //     newcmd = curline;
-  //     curline.remove_prefix(curline.length());
-  //     complete = false;
-  //   } else {
-  //     newcmd = curline.substr(0, eolpos);
-  //     curline.remove_prefix(eolpos+1);
-  //     m_lineno++;
-  //   }
-  //   m_cmd += newcmd;
-  //   if(!complete) return;
-  //   auto cmd = m_cmd;
-  //   m_cmd.clear();
   m_acculine.addNewInput(line);
   std::optional<std::string> cmd;
   while((cmd = m_acculine.getNextCmd()))
