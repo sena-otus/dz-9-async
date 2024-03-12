@@ -12,6 +12,7 @@ Parser::Parser(unsigned N, std::unique_ptr<AbstractBlock> &&block)
 
 void Parser::parse(const std::string_view& line)
 {
+  const std::lock_guard<std::mutex> guard(m_protectparse);
   m_acculine.addNewInput(line);
   std::optional<std::string> cmd;
   while((cmd = m_acculine.getNextCmd()))
@@ -41,6 +42,9 @@ void Parser::parse(const std::string_view& line)
 
 void Parser::finalize()
 {
+    // вообще здесь не нужна защита, потому что finalize() никогда не
+    // вызывается параллельно с parse()
+  const std::lock_guard<std::mutex> guard(m_protectparse);
   if(m_extendedModeLevel==0)
   {
     m_block->flush();

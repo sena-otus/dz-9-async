@@ -32,6 +32,6 @@ private:
   int m_lineno{0};
   int m_extendedModeLevel{0};
   unsigned m_N;
-//  std::string m_cmd;
   AccuLine m_acculine;
+  std::mutex m_protectparse;
 };
