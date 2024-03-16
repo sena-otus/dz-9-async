@@ -33,12 +33,7 @@ void Block::append(const std::string_view &line) {
 void Block::flush() {
   if (m_cmdnum > 0) {
     std::string fname;
-    if (m_buid == 0) {
-      fname = str(boost::format("bulk%d-%03d.log"     ) % m_timestamp % m_puid);
-    } else {
-      fname = str(boost::format("bulk%d-%03d-%03d.log") % m_timestamp % m_puid % m_buid);
-    }
-
+    fname = str(boost::format("bulk%d-%03d-%03d.log") % m_timestamp % m_puid % m_buid);
     OutQueue::Task task{m_str, fname, false};
 
     std::for_each(m_wlist.begin(), m_wlist.end(),
